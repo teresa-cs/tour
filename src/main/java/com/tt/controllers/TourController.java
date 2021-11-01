@@ -11,7 +11,7 @@ import com.tt.pojos.Place;
 import com.tt.pojos.Tour;
 import com.tt.pojos.TourDetail;
 import com.tt.service.TourService;
-import com.tt.validator.WebAppValidator;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,13 +43,13 @@ public class TourController {
 
     @Autowired
     private TourService tourService;
-    @Autowired
-    private WebAppValidator tourValidator;
-
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.setValidator(tourValidator);
-    }
+//    @Autowired
+//    private WebAppValidator tourValidator;
+//
+//    @InitBinder
+//    public void initBinder(WebDataBinder binder) {
+//        binder.setValidator(tourValidator);
+//    }
 
     @GetMapping("/tour")
     public String tour(Model model, @RequestParam(required = false) Map<String, String> params) {
@@ -72,25 +72,9 @@ public class TourController {
         return "tour-place";
     }
 
-    @GetMapping("/addtour")
-    public String addtour(Model model) {
-        model.addAttribute("tour", new Tour());
-        return "addtour";
+
     }
 
-    @PostMapping("/addtour")
-    public String addtour(Model model,@ModelAttribute(value = "tour") @Valid Tour tour,
-            BindingResult result) {
-        if (!result.hasErrors()) {
-           
-            if (this.tourService.addOrUpdate(tour) == true) {
-                return "redirect:/";
-            }else{
-                model.addAttribute("errMsg", "Something wrong!");
-            }
-        }
 
-        return "addtour";
-    }
+  
 
-}

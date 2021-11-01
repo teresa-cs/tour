@@ -5,6 +5,7 @@
  */
 package com.tt.pojos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -12,9 +13,12 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -39,14 +43,22 @@ import org.springframework.web.multipart.MultipartFile;
     @NamedQuery(name = "Tour.findAll", query = "SELECT t FROM Tour t"),
     @NamedQuery(name = "Tour.findById", query = "SELECT t FROM Tour t WHERE t.id = :id"),
     @NamedQuery(name = "Tour.findByName", query = "SELECT t FROM Tour t WHERE t.name = :name"),
-    @NamedQuery(name = "Tour.findByDestination", query = "SELECT t FROM Tour t WHERE t.destination = :destination"),
     @NamedQuery(name = "Tour.findByDays", query = "SELECT t FROM Tour t WHERE t.days = :days"),
-    @NamedQuery(name = "Tour.findByUnitprice", query = "SELECT t FROM Tour t WHERE t.unitprice = :unitprice"),
     @NamedQuery(name = "Tour.findByBegindate", query = "SELECT t FROM Tour t WHERE t.begindate = :begindate"),
     @NamedQuery(name = "Tour.findByEnddate", query = "SELECT t FROM Tour t WHERE t.enddate = :enddate"),
     @NamedQuery(name = "Tour.findByMeetingplace", query = "SELECT t FROM Tour t WHERE t.meetingplace = :meetingplace"),
     @NamedQuery(name = "Tour.findByAvt", query = "SELECT t FROM Tour t WHERE t.avt = :avt")})
 public class Tour implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idtour")
+    private Collection<OrderTour> orderTourCollection;
+
+    @JoinColumn(name = "id_place", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Place idPlace;
+
+    @Column(name = "price")
+    private Integer price;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -57,14 +69,9 @@ public class Tour implements Serializable {
     @Size(max = 45)
     @Column(name = "name")
     private String name;
-    @Size(max = 2000)
-    @Column(name = "destination")
-    private String destination;
     @Column(name = "days")
     private Integer days;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "unitprice")
-    private Double unitprice;
     @Column(name = "begindate")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -79,15 +86,37 @@ public class Tour implements Serializable {
     @Size(max = 200)
     @Column(name = "avt")
     private String avt;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idtour")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idtour", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Collection<TourDetail> tourDetailCollection;
-    @OneToMany(mappedBy = "idtour")
+    @OneToMany(mappedBy = "idtour", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Collection<Receipt> receiptCollection;
+
     @Transient
     private MultipartFile file;
 
     public Tour() {
     }
+
+    public Tour(Collection<OrderTour> orderTourCollection, Place idPlace, Integer price, Integer id, String name, Integer days, Date begindate, Date enddate, String meetingplace, String avt, Collection<TourDetail> tourDetailCollection, Collection<Receipt> receiptCollection, MultipartFile file) {
+        this.orderTourCollection = orderTourCollection;
+        this.idPlace = idPlace;
+        this.price = price;
+        this.id = id;
+        this.name = name;
+        this.days = days;
+        this.begindate = begindate;
+        this.enddate = enddate;
+        this.meetingplace = meetingplace;
+        this.avt = avt;
+        this.tourDetailCollection = tourDetailCollection;
+        this.receiptCollection = receiptCollection;
+        this.file = file;
+    }
+    
+    
+    
 
     public Tour(Integer id) {
         this.id = id;
@@ -109,28 +138,12 @@ public class Tour implements Serializable {
         this.name = name;
     }
 
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
     public Integer getDays() {
         return days;
     }
 
     public void setDays(Integer days) {
         this.days = days;
-    }
-
-    public Double getUnitprice() {
-        return unitprice;
-    }
-
-    public void setUnitprice(Double unitprice) {
-        this.unitprice = unitprice;
     }
 
     public Date getBegindate() {
@@ -221,5 +234,32 @@ public class Tour implements Serializable {
     public void setFile(MultipartFile file) {
         this.file = file;
     }
-    
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public Place getIdPlace() {
+        return idPlace;
+    }
+
+    public void setIdPlace(Place idPlace) {
+        this.idPlace = idPlace;
+    }
+
+    @XmlTransient
+    public Collection<OrderTour> getOrderTourCollection() {
+        return orderTourCollection;
+    }
+
+    public void setOrderTourCollection(Collection<OrderTour> orderTourCollection) {
+        this.orderTourCollection = orderTourCollection;
+    }
+
+
+
 }

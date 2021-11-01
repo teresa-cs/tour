@@ -6,11 +6,10 @@
 package com.tt.controllers;
 
 import com.tt.pojos.Hotel;
-import com.tt.pojos.Order1;
 import com.tt.pojos.Room;
 import com.tt.pojos.Tour;
 import com.tt.service.HotelService;
-import com.tt.validator.WebAppValidator;
+
 import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,18 +31,21 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author trang
  */
 @Controller
-@ControllerAdvice
+//@ControllerAdvice
 public class HotelController {
     @Autowired
     private HotelService hotelService;
     
-    @Autowired
-    private WebAppValidator orderValidator;
-
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.setValidator(orderValidator);
-    }
+//    
+//    @Autowired
+//    private WebAppValidator hotelValidator;
+//    
+//    
+//
+//    @InitBinder
+//    public void initBinder(WebDataBinder binder) {
+//        binder.setValidator(hotelValidator);
+//    }
     
   
     @GetMapping("/hotel")
@@ -61,29 +63,8 @@ public class HotelController {
         model.addAttribute("room", this.hotelService.getRooms(hotelId));
         return "room";
     }
-    @GetMapping("/hotel/order-{roomId}")
-    public String order(Model model, @PathVariable(value = "roomId") int roomId) {
-        model.addAttribute("order", new Order1());
-        model.addAttribute("room", this.hotelService.getRoombyId(roomId));
-        return "order";
-    }
+  
     
-
-    
-    @PostMapping("/hotel/order-{roomId}")
-    public String add(Model model,@ModelAttribute(value = "order") @Valid Order1 o,
-            BindingResult result) {
-        if (!result.hasErrors()) {
-           
-            if (this.hotelService.addOrder(o) == true) {
-                return "redirect:/";
-            }else{
-                model.addAttribute("errMsg", "Something wrong!");
-            }
-        }
-
-        return "order";
-    }
     
     
 }

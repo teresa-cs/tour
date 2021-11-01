@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -37,9 +38,15 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Room.findById", query = "SELECT r FROM Room r WHERE r.id = :id"),
     @NamedQuery(name = "Room.findByPrice", query = "SELECT r FROM Room r WHERE r.price = :price"),
     @NamedQuery(name = "Room.findByType", query = "SELECT r FROM Room r WHERE r.type = :type"),
-    @NamedQuery(name = "Room.findByImage", query = "SELECT r FROM Room r WHERE r.image = :image"),
-    @NamedQuery(name = "Room.findByMaximum", query = "SELECT r FROM Room r WHERE r.maximum = :maximum")})
+    @NamedQuery(name = "Room.findByImage", query = "SELECT r FROM Room r WHERE r.image = :image")})
 public class Room implements Serializable {
+
+  
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idroom")
+    private Collection<Orders> bookingCollection;
+
+    
+
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -60,17 +67,28 @@ public class Room implements Serializable {
     @Size(max = 100)
     @Column(name = "image")
     private String image;
-    @Size(max = 45)
-    @Column(name = "maximum")
-    private String maximum;
     @JoinColumn(name = "idhotel", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Hotel idhotel;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idroom")
-    private Collection<Order1> order1Collection;
+    @Size(max = 45)
+    @Column(name = "maximum")
+    private String maximum;
 
     public Room() {
     }
+
+    public Room(Collection<Orders> bookingCollection, Integer id, String price, String type, String description, String image, Hotel idhotel, String maximum) {
+        this.bookingCollection = bookingCollection;
+        this.id = id;
+        this.price = price;
+        this.type = type;
+        this.description = description;
+        this.image = image;
+        this.idhotel = idhotel;
+        this.maximum = maximum;
+    }
+    
+    
 
     public Room(Integer id) {
         this.id = id;
@@ -100,6 +118,7 @@ public class Room implements Serializable {
         this.type = type;
     }
 
+
     public String getDescription() {
         return description;
     }
@@ -116,29 +135,12 @@ public class Room implements Serializable {
         this.image = image;
     }
 
-    public String getMaximum() {
-        return maximum;
-    }
-
-    public void setMaximum(String maximum) {
-        this.maximum = maximum;
-    }
-
     public Hotel getIdhotel() {
         return idhotel;
     }
 
     public void setIdhotel(Hotel idhotel) {
         this.idhotel = idhotel;
-    }
-
-    @XmlTransient
-    public Collection<Order1> getOrder1Collection() {
-        return order1Collection;
-    }
-
-    public void setOrder1Collection(Collection<Order1> order1Collection) {
-        this.order1Collection = order1Collection;
     }
 
     @Override
@@ -165,5 +167,28 @@ public class Room implements Serializable {
     public String toString() {
         return "com.tt.pojos.Room[ id=" + id + " ]";
     }
+
+
+
+
+
+    public String getMaximum() {
+        return maximum;
+    }
+
+    public void setMaximum(String maximum) {
+        this.maximum = maximum;
+    }
+
+    @XmlTransient
+    public Collection<Orders> getBookingCollection() {
+        return bookingCollection;
+    }
+
+    public void setBookingCollection(Collection<Orders> bookingCollection) {
+        this.bookingCollection = bookingCollection;
+    }
+
+
     
 }

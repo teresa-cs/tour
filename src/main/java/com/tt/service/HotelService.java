@@ -6,7 +6,6 @@
 package com.tt.service;
 
 import com.tt.pojos.Hotel;
-import com.tt.pojos.Order1;
 import com.tt.pojos.Room;
 import java.util.List;
 
@@ -16,12 +15,11 @@ import java.util.List;
  */
 public interface HotelService {
     List<Hotel> getHotels(String kw, int page);
-
     Hotel getHotelbyId(int id);
-
     long countHotel();
-
     List<Room> getRooms(int id);
     Room getRoombyId(int id);
-    boolean addOrder(Order1 o);
+    boolean addOrUpdate(Hotel hotel);
+    List<Hotel> searchRate(int rate);
+    List<Hotel> bestHotel();
 }

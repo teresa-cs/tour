@@ -72,4 +72,27 @@ public class TourServiceImpl implements TourService {
     public long countDetail(int id) {
         return this.tourRepository.countDetail(id);
     }
+
+    @Override
+    public boolean deleteTour(int id) {
+        return this.tourRepository.deleteTour(id);
+    }
+
+    @Override
+    public boolean updateTour(Tour oldTour, Tour newTour) {
+        oldTour.setName(newTour.getName());
+        oldTour.setBegindate(newTour.getBegindate());
+        oldTour.setEnddate(newTour.getEnddate());
+        oldTour.setMeetingplace(newTour.getMeetingplace());
+        oldTour.setPrice(newTour.getPrice());
+        oldTour.setAvt(newTour.getAvt());
+        
+        return this.tourRepository.updateTour(oldTour);
+    }
+
+    @Override
+    public List<Tour> bestTour() {
+        return this.tourRepository.bestTour();
+
+    }
 }

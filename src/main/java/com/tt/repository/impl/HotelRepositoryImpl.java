@@ -6,13 +6,16 @@
 package com.tt.repository.impl;
 
 import com.tt.pojos.Hotel;
-import com.tt.pojos.Order1;
+import com.tt.pojos.Orders;
+import com.tt.pojos.Orders_;
 import com.tt.pojos.Room;
+import com.tt.pojos.Room_;
 import com.tt.repository.HotelRepository;
-import com.tt.validator.WebAppValidator;
 import java.util.List;
+import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
@@ -78,22 +81,49 @@ public class HotelRepositoryImpl implements HotelRepository{
     }
 
     @Override
-    public boolean addOrder(Order1 o) {
-        Session session = this.sessionFactory.getObject().getCurrentSession();       
+    public Room getRoombyId(int id) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        return session.get(Room.class, id);
+    }
+
+    @Override
+    public boolean addOrUpdate(Hotel hotel) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
         try {
-            session.save(o);
+            session.save(hotel);
             return true;
         } catch (Exception ex) {
-            System.err.println("=== ADD ORDER EER ===" + ex.getMessage());
+            System.err.println("=== ADD Hotel EER ===" + ex.getMessage());
             ex.printStackTrace();
         }
         return false;
     }
 
     @Override
-    public Room getRoombyId(int id) {
-        Session session = this.sessionFactory.getObject().getCurrentSession();
-        return session.get(Room.class, id);
+    public List<Hotel> searchRate(int rate) {
+         Session session = this.sessionFactory.getObject().getCurrentSession();
+        Query q = session.createQuery("SELECT h FROM Hotel h WHERE h.rate = :rate");
+        q.setParameter("rate", String.valueOf(rate));
+        return q.getResultList();
+    }
+
+    @Override
+    public List<Hotel> bestHotel() {
+        Session s = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery q = b.createQuery(Room.class);
+        Root r = q.from(Room.class);
+        CollectionJoin<Room,Orders > orders =r.join(Room_.bookingCollection,JoinType.INNER);
+
+        q = q.select(r)
+                .groupBy(orders.get(Orders_.idroom))
+                .orderBy(b.desc(b.count(orders.get(Orders_.idroom))));
+
+        Query query = s.createQuery(q);
+
+        query.setMaxResults(6);
+
+        return query.getResultList();
     }
 
     

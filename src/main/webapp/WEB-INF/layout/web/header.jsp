@@ -1,7 +1,9 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+ <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 <div id="page">
     <nav class="colorlib-nav" role="navigation">
         <div class="top-menu">
@@ -15,24 +17,41 @@
                             <li class="active"><a href="<c:url value="/"/>">Home</a></li>
                             <li><a href="tour">Tours</a></li> 
                             <li><a href="hotel">Hotels</a></li>
-                            <li><a href="blog.html">Blog</a></li>
+                            <li><a href="post">Blog</a></li>
                             <li><a href="about.html">About</a></li>
                             <li><a href="contact.html">Contact</a></li>
 
 
                             <c:if test="${pageContext.request.userPrincipal.name == null}">
-                                <a href="login">Log in</a>
+                                <li>   <a href="login">Log in</a></li>
                             </c:if>
                             <li class="has-dropdown">
-                                <a href="<c:url value="/"/>">${pageContext.request.userPrincipal.name}</a>
-                                <ul class="dropdown">
-                                    <c:if test="${pageContext.request.userPrincipal.name != null}">
-                                        <li><a href="<c:url value="/logout"/>"> Logout</a></li></c:if>
-                                </ul>
+                                <c:if test="${pageContext.request.userPrincipal.name != null}">
+
+                                    <c:if test="${currentUser.avt != null}">
+                                        <img src="${currentUser.avt}" class="rounded-circle" style="width:30px;height:25px"/>
+                                    </c:if>
+                                    <c:if test="${currentUser.avt == null}">
+                                        <i class="fa fa-user" aria-hidden="true"></i>
+                                    </c:if>
+                                    <a href="<c:url value="/"/>">${pageContext.request.userPrincipal.name}</a>
+
+                                    <ul class="dropdown">
+
+
+                                        <li><a href="<c:url value="/logout"/>" style="text-align: center"> Logout</a></li>
+                                            <sec:authorize access="hasAnyAuthority('6','9')">
+                                            <li><a href="<c:url value="/admin"/>" style="text-align: center">Admin</a></li>
+                                            </sec:authorize>
+
+                                    </ul>
+                                </c:if>
                             </li>
+
+
                         </ul>
                     </div>
-                                
+
                 </div>
             </div>
         </div>

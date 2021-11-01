@@ -4,6 +4,8 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@taglib  prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+
 <!DOCTYPE HTML>
 <html>
 
@@ -79,9 +81,9 @@
                             <div class="col-xs-10 text-right menu-1">
                                 <ul>
                                     <li class="active"><a href="<c:url value=" /" />">Home</a></li>
-                                    <li><a href="<c:url value=" /tour" />">Tours</a></li>
-                                    <li><a href="<c:url value=" /hotel" />">Hotels</a></li>
-                                    <li><a href="blog.html">Blog</a></li>
+                                    <li><a href="<c:url value="/tour" />">Tours</a></li>
+                                    <li><a href="<c:url value="/hotel" />">Hotels</a></li>
+                                    <li><a href="<c:url value="/post"/>">Blog</a></li>
                                     <li><a href="about.html">About</a></li>
                                     <li><a href="contact.html">Contact</a></li>
 
@@ -237,26 +239,18 @@
                                                     <label for="quantity"
                                                            style="color: white">Guest</label>
                                                     <div class="form-field">
-                                                        <form:select name="people" path="quantity"
-                                                                     class="form-control"
-                                                                     style="border: 1px solid white; color:white">
-                                                            <form:option style="color:black" value="1"
-                                                                         label="1" />
-                                                            <form:option style="color:black" value="2"
-                                                                         label="2" />
-                                                            <form:option style="color:black" value="3"
-                                                                         label="3" />
-                                                            <form:option style="color:black" value="4"
-                                                                         label="4" />
-                                                            <form:option style="color:black" value="5+"
-                                                                         label="5+" />
-                                                        </form:select>
+                                                        <form:input type="text" path="quantity"
+                                                                    class="form-control "
+                                                                    placeholder="quantity"
+                                                                    style="border: 1px solid white; color:white"
+                                                                    />
                                                         <form:errors path="quantity"
                                                                      cssClass="alert alert-danger"
                                                                      element="div" />
                                                     </div>
                                                 </div>
                                             </div>
+                                            <input type="submit" class="btn btn-primary" value="Add tour"/>
 
                                         </div>
 

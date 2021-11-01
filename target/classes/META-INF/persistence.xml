@@ -19,8 +19,6 @@
     <class>com.tt.pojos.Place</class>
     <class>com.tt.pojos.Employee</class>
     <class>com.tt.pojos.Customer</class>
-    <class>com.tt.pojos.Orderr</class>
-    <class>com.tt.pojos.Order1</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/touragency?zeroDateTimeBehavior=CONVERT_TO_NULL"/>

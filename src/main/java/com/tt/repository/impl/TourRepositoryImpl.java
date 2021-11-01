@@ -5,13 +5,20 @@
  */
 package com.tt.repository.impl;
 
+import com.tt.pojos.OrderTour;
+import com.tt.pojos.OrderTour_;
 import com.tt.pojos.Place;
 import com.tt.pojos.Tour;
 import com.tt.pojos.TourDetail;
+import com.tt.pojos.Tour_;
 import com.tt.repository.TourRepository;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
@@ -44,22 +51,12 @@ public class TourRepositoryImpl implements TourRepository {
             Predicate p = builder.like(root.get("name").as(String.class), String.format("%%%s%%", kw));
             query = query.where(p);
         }
-        int max = 4;
+        int max = 10;
         Query q = session.createQuery(query);
         q.setMaxResults(max);
         q.setFirstResult((page - 1) * max);
         return q.getResultList();
     }
-
-//    @Override
-//    public Tour getTourbyId(int tourId) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public long countTour() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
 
     @Override
     public Tour getTourbyId(int id) {
@@ -83,6 +80,17 @@ public class TourRepositoryImpl implements TourRepository {
     @Override
     public List<TourDetail> getTourDetail(int id) {
         Session session = this.sessionFactory.getObject().getCurrentSession();
+//        CriteriaBuilder builder = session.getCriteriaBuilder();
+//        CriteriaQuery query = builder.createQuery(Object[].class);
+//        Root rootT = query.from(Tour.class);
+//        Root rootTD = query.from(TourDetail.class);
+//        query = query.multiselect(rootTD.get("id"), rootT.get("id"), rootTD.get("image"));
+//
+//        Predicate p = builder.equal(rootT.get("id"), rootTD.get("idtour"));
+//
+//        Predicate p1 = builder.equal(rootT.get("id"), id);
+//        query = query.where(builder.and(p, p1));
+
         Query q = session.createQuery("SELECT t FROM TourDetail t WHERE t.idtour = :id");
         q.setParameter("id", getTourbyId(id));
         return q.getResultList();
@@ -100,14 +108,60 @@ public class TourRepositoryImpl implements TourRepository {
         }
         return false;
     }
-    
+
     @Override
     public long countDetail(int id) {
         Session session = this.sessionFactory.getObject().getCurrentSession();
         Query q = session.createQuery("Select Count(*) FROM TourDetail t WHERE t.idtour = :id");
-        q.setParameter("id",getTourbyId(id));
+        q.setParameter("id", getTourbyId(id));
         return Long.parseLong(q.getSingleResult().toString());
     }
 
+    @Override
+    public boolean deleteTour(int id) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        try {
+            Tour tour = getTourbyId(id);
+            session.delete(tour);
+            return true;
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return false;
+
+    }
+
+    @Override
+    public boolean updateTour(Tour tour) {
+        Session session = this.sessionFactory.getObject().getCurrentSession();
+        try {
+            session.update(tour);
+            return true;
+        } catch (Exception ex) {
+            System.err.println("=== UPDATE TOUR EER ===" + ex.getMessage());
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public List<Tour> bestTour() {
+        Session s = this.sessionFactory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery q = b.createQuery(Tour.class);
+        Root r = q.from(Tour.class);
+        CollectionJoin<Tour, OrderTour> orders =r.join(Tour_.orderTourCollection,JoinType.INNER);
+
+        q = q.select(r)
+                .groupBy(orders.get(OrderTour_.idtour))
+                .orderBy(b.desc(b.count(orders.get(OrderTour_.idtour))));
+
+        Query query = s.createQuery(q);
+
+        query.setMaxResults(8);
+
+        return query.getResultList();
+
+    }
 
 }

@@ -6,8 +6,8 @@
 package com.tt.repository;
 
 import com.tt.pojos.Hotel;
-import com.tt.pojos.Order1;
 import com.tt.pojos.Room;
+import com.tt.pojos.Tour;
 import java.util.List;
 
 /**
@@ -24,6 +24,8 @@ public interface HotelRepository {
     List<Room> getRooms(int id);
     
     Room getRoombyId(int id);
-    boolean addOrder(Order1 o);
+    boolean addOrUpdate(Hotel hotel);
     
+    List<Hotel> searchRate(int rate);
+     List<Hotel> bestHotel();
 }

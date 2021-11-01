@@ -5,14 +5,6 @@
  */
 package com.tt.configs;
 
-
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-import com.tt.validator.OrderValidator;
-import com.tt.validator.TourNameValidator;
-import com.tt.validator.WebAppValidator;
-import java.util.HashSet;
-import java.util.Set;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -33,7 +25,6 @@ import org.springframework.web.servlet.view.JstlView;
  *
  * @author anhtu
  */
-
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
@@ -43,24 +34,23 @@ import org.springframework.web.servlet.view.JstlView;
     "com.tt.service",
     "com.tt.validator"
 })
-public class WebApplicationContextConfig implements WebMvcConfigurer{
+public class WebApplicationContextConfig implements WebMvcConfigurer {
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-       configurer.enable();
+        configurer.enable();
     }
-    
+
     @Bean
-    public InternalResourceViewResolver getInternalResourceViewResolver(){
+    public InternalResourceViewResolver getInternalResourceViewResolver() {
         InternalResourceViewResolver resource = new InternalResourceViewResolver();
-        
+
         resource.setViewClass(JstlView.class);
         resource.setPrefix("/WEB-INF/jsp/");
         resource.setSuffix(".jsp");
-        
+
         return resource;
     }
-    
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -77,32 +67,12 @@ public class WebApplicationContextConfig implements WebMvcConfigurer{
         resolver.setDefaultEncoding("UTF-8");
         return resolver;
     }
-    
-    
-
 
     @Override
     public Validator getValidator() {
         return validator();
     }
-    
-    @Bean
-    public WebAppValidator tourValidator(){
-        Set<Validator> springValidators = new HashSet<>();
-        springValidators.add(new TourNameValidator());
-        WebAppValidator v = new WebAppValidator();
-        v.setSpringValidator(springValidators);
-        return v;
-    }
 
-    @Bean
-    public WebAppValidator orderValidator() {
-        Set<Validator> springValidators = new HashSet<>();
-        springValidators.add(new OrderValidator());
-        WebAppValidator v = new WebAppValidator();
-        v.setSpringValidator(springValidators);
-        return v;
-    }
 
     @Bean
     public LocalValidatorFactoryBean validator() {
@@ -111,13 +81,13 @@ public class WebApplicationContextConfig implements WebMvcConfigurer{
         bean.setValidationMessageSource(messageSource());
         return bean;
     }
-    
+
     @Bean
-    public MessageSource messageSource(){
-        ResourceBundleMessageSource source= new ResourceBundleMessageSource();
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
         source.setBasename("message");
+        source.setDefaultEncoding("UTF-8");
         return source;
     }
-   
 
 }

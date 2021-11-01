@@ -5,6 +5,7 @@
  */
 package com.tt.pojos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -15,16 +16,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -41,6 +45,23 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "User.findByStatus", query = "SELECT u FROM User u WHERE u.status = :status")})
 public class User implements Serializable {
 
+    
+    public static final int QTV=6;
+    public static final int KH=5;
+    public static final int ADMIN=1;
+    public static final int CSKH=7;
+    public static final int HDV=8;
+    public static final int QL=9;
+    
+    @Size(max = 100)
+    @Column(name = "avt")
+    private String avt;
+    
+    
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "iduser")
+    private Collection<Orders> bookingCollection;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,25 +75,37 @@ public class User implements Serializable {
     private String username;
     @Basic(optional = false)
     @NotNull
+    @JsonIgnore
     @Size(min = 1, max = 100)
     @Column(name = "password")
     private String password;
     @Basic(optional = false)
     @NotNull
+    @JsonIgnore
     @Column(name = "status")
     private short status;
     @OneToMany(mappedBy = "iduser")
+    @JsonIgnore
     private Collection<Receipt> receiptCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "iduser")
+    @JsonIgnore
     private Collection<Cmt> cmtCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
+    private Collection<Employee> employeeCollection;
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Role roleId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "iduser")
-    private Collection<Order1> order1Collection;
-     @Transient
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
+    private Collection<Customer> customerCollection;
+    @JsonIgnore
+    @Transient
     private String confirmPassword;
-
+    @JsonIgnore
+    @Transient
+    private MultipartFile file;
     public User() {
     }
 
@@ -137,6 +170,15 @@ public class User implements Serializable {
         this.cmtCollection = cmtCollection;
     }
 
+    @XmlTransient
+    public Collection<Employee> getEmployeeCollection() {
+        return employeeCollection;
+    }
+
+    public void setEmployeeCollection(Collection<Employee> employeeCollection) {
+        this.employeeCollection = employeeCollection;
+    }
+
     public Role getRoleId() {
         return roleId;
     }
@@ -146,12 +188,12 @@ public class User implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Order1> getOrder1Collection() {
-        return order1Collection;
+    public Collection<Customer> getCustomerCollection() {
+        return customerCollection;
     }
 
-    public void setOrder1Collection(Collection<Order1> order1Collection) {
-        this.order1Collection = order1Collection;
+    public void setCustomerCollection(Collection<Customer> customerCollection) {
+        this.customerCollection = customerCollection;
     }
 
     @Override
@@ -192,5 +234,43 @@ public class User implements Serializable {
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
     }
+
+    @XmlTransient
+    public Collection<Orders> getBookingCollection() {
+        return bookingCollection;
+    }
+
+    public void setBookingCollection(Collection<Orders> bookingCollection) {
+        this.bookingCollection = bookingCollection;
+    }
+
+    public String getAvt() {
+        return avt;
+    }
+
+    public void setAvt(String avt) {
+        this.avt = avt;
+    }
+
+    /**
+     * @return the file
+     */
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    /**
+     * @param file the file to set
+     */
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+ 
+
+
+
+
+
     
 }

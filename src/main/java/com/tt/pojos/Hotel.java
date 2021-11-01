@@ -5,6 +5,7 @@
  */
 package com.tt.pojos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -19,9 +20,11 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -36,10 +39,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Hotel.findByName", query = "SELECT h FROM Hotel h WHERE h.name = :name"),
     @NamedQuery(name = "Hotel.findByAddress", query = "SELECT h FROM Hotel h WHERE h.address = :address"),
     @NamedQuery(name = "Hotel.findByRate", query = "SELECT h FROM Hotel h WHERE h.rate = :rate"),
-    @NamedQuery(name = "Hotel.findByAvt", query = "SELECT h FROM Hotel h WHERE h.avt = :avt"),
-    @NamedQuery(name = "Hotel.findByEmail", query = "SELECT h FROM Hotel h WHERE h.email = :email"),
-    @NamedQuery(name = "Hotel.findByPhone", query = "SELECT h FROM Hotel h WHERE h.phone = :phone")})
+    @NamedQuery(name = "Hotel.findByAvt", query = "SELECT h FROM Hotel h WHERE h.avt = :avt")})
 public class Hotel implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idhotel")
+    private Collection<Orders> ordersCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -63,17 +67,26 @@ public class Hotel implements Serializable {
     @Size(max = 100)
     @Column(name = "avt")
     private String avt;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
-    @Size(max = 100)
-    @Column(name = "email")
-    private String email;
-    // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or fax number consider using this annotation to enforce field validation
-    @Size(max = 45)
-    @Column(name = "phone")
-    private String phone;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idhotel")
+    @JsonIgnore
     private Collection<Room> roomCollection;
+    
+    @Transient
+    private MultipartFile file;
 
+    public Hotel(Integer id, String name, String address, String rate, String description, String avt, Collection<Room> roomCollection, MultipartFile file) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.rate = rate;
+        this.description = description;
+        this.avt = avt;
+        this.roomCollection = roomCollection;
+        this.file = file;
+    }
+    
+    
+    
     public Hotel() {
     }
 
@@ -129,22 +142,6 @@ public class Hotel implements Serializable {
         this.avt = avt;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     @XmlTransient
     public Collection<Room> getRoomCollection() {
         return roomCollection;
@@ -178,5 +175,29 @@ public class Hotel implements Serializable {
     public String toString() {
         return "com.tt.pojos.Hotel[ id=" + id + " ]";
     }
+
+    /**
+     * @return the file
+     */
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    /**
+     * @param file the file to set
+     */
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+    @XmlTransient
+    public Collection<Orders> getOrdersCollection() {
+        return ordersCollection;
+    }
+
+    public void setOrdersCollection(Collection<Orders> ordersCollection) {
+        this.ordersCollection = ordersCollection;
+    }
+    
     
 }

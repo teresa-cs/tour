@@ -5,10 +5,14 @@
  */
 package com.tt.controllers;
 
+import com.tt.service.TourService;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -19,18 +23,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @Controller
+@ControllerAdvice
 public class HomeController {
     
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
+     @Autowired
+    private TourService tourService;
     
-    
+//    @ModelAttribute
+//    public void common(Model model ){
+//    
+//    }
     
     @RequestMapping("/")
-    public String index(Model model){        
+    public String index(Model model, HttpSession session){       
+        model.addAttribute("currentUser", session.getAttribute("currentUser"));
+        model.addAttribute("besttour", this.tourService.bestTour());
        return "index";
     }
-  
+ 
     @RequestMapping("/admin")
     public String admin(){
         return "admin";
